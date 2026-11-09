@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: aerofog-iot-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /

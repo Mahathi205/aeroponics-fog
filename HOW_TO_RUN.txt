@@ -23,6 +23,9 @@ WHAT HAPPENS WHEN YOU RUN IT:
 
 2. Your browser will automatically open at:
    http://localhost:8501
+3. Use the page navigation to open 'iFogSim Digital Twin'. The first
+   simulation run compiles the bundled iFogSim2 model. Java 21+ JDK (both
+   java and javac available on PATH) is needed for this page's run button.
 
 ------------------------------------------------------------------------
 HOW TO DEMO / TEST ON THE DASHBOARD:
@@ -33,8 +36,22 @@ HOW TO DEMO / TEST ON THE DASHBOARD:
 - MANUAL CONTROL: Click 'Pump ON', 'Pump OFF', or 'AUTO' in the sidebar.
 - FAULT INJECTION: Click buttons like 'Stuck Sensor', 'Out of Range',
   'Sensor Offline', or 'Pump Failure' to see instant edge detection.
-- FOG VS CLOUD: Toggle 'Simulate Cloud Processing' to compare edge
-  speed (<2ms) vs cloud delay (~300ms).
+- PYTHON TIMING DEMO: Toggle 'Simulate Cloud Processing' to see the
+  local decision routine versus the configured artificial cloud delay.
+  This is not end-to-end network latency.
+
+- IFOGSIM DIGITAL TWIN: Choose the sensor-zone count, WAN delay, and
+  simulation duration, then run the fog + cloud comparison. The dashboard
+  charts the real iFogSim loop outputs and offers a CSV download.
+
+------------------------------------------------------------------------
+IFOGSIM2 DIGITAL TWIN (INTEGRATED INTO THE STREAMLIT PROJECT)
+------------------------------------------------------------------------
+See ifogsim/README.md. The official iFogSim2 source and required libraries
+are already included. On a machine with a Java JDK, use the dashboard's
+'iFogSim Digital Twin' page or run:
+    python ifogsim/runner.py --mode both --sensors 3 --wan-ms 100 --seconds 300
+Both paths run the actual Java simulator and save one CSV per placement.
 
 To stop the system: Press Ctrl + C in the terminal window.
 For complete academic notes, diagrams, and viva Q&A, open README.md.

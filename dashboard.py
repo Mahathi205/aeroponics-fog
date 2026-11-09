@@ -37,7 +37,7 @@ TOPICS = CONFIG["mqtt"]["topics"]
 
 # Streamlit Page Setup
 st.set_page_config(
-    page_title="Aeroponics Fog IoT System",
+    page_title="AeroFog | Smart Aeroponics",
     page_icon="🌱",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -157,29 +157,22 @@ if st.sidebar.button("🧹 Clear / Reset Faults", use_container_width=True):
     st.sidebar.success("Cleared all active faults & restored baseline!")
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("☁️ Stage 6: Fog vs Cloud Benchmark")
-
-sim_cloud = st.sidebar.toggle("Simulate Cloud Processing (+300ms latency)", value=False)
-net_connected = st.sidebar.toggle("Internet Connected (simulate WAN health)", value=True)
+net_connected = st.sidebar.toggle("Cloud connection available", value=True)
 
 # Publish mode update to Fog Node
-mode_payload = json.dumps({"simulate_cloud": sim_cloud, "internet_connected": net_connected})
+mode_payload = json.dumps({"simulate_cloud": False, "internet_connected": net_connected})
 send_mqtt_command(TOPICS.get("system_mode", "aeroponics/system/mode"), mode_payload)
 
 if not net_connected:
-    st.sidebar.error("⚠️ WAN Outage Active! Cloud path will fail; Local Fog Node maintains autonomous safety.")
-elif sim_cloud:
-    st.sidebar.info("☁️ Cloud Mode: Control decisions incur ~300ms cloud network delay.")
-else:
-    st.sidebar.success("⚡ Edge/Fog Mode: Sub-millisecond localized decision loop.")
+    st.sidebar.warning("Cloud unavailable. Local fog control remains active.")
 
 
 # -----------------------------------------------------------------------------
 # Main Header & System Health Status
 # -----------------------------------------------------------------------------
-st.title("🌱 Fog-Based IoT System for Vertical Aeroponics")
+st.title("🌿 AeroFog: Smart Aeroponics Monitoring & Control")
 st.markdown(
-    "Automated Monitoring, Precision Misting Control, Edge Fault Detection, and Architectural Benchmarking."
+    "Live sensor monitoring, fog-based misting control, fault detection, and iFogSim fog–cloud simulation."
 )
 
 # Fetch latest reading & pump state
@@ -206,8 +199,7 @@ with c_reason:
 
 with c_latency:
     lat_val = latest_pump.get("latency_ms", 0.0)
-    lat_label = "⚡ Local Fog (<5ms)" if lat_val < 50 else f"☁️ Cloud ({lat_val:.1f}ms)"
-    st.metric(label="Actuation Decision Latency", value=lat_label)
+    st.metric(label="Control Decision Time", value=f"{lat_val:.2f} ms")
 
 st.markdown("---")
 
@@ -338,46 +330,6 @@ if readings:
         st.plotly_chart(fig_chem, use_container_width=True)
 else:
     st.info("Accumulating history... Readings will appear here shortly.")
-
-# -----------------------------------------------------------------------------
-# Stage 6: Fog vs Cloud Architectural Benchmark
-# -----------------------------------------------------------------------------
-st.markdown("---")
-st.subheader("⚡ Fog vs Cloud Architectural Evaluation")
-
-latency_records = database.get_latency_data(limit=50)
-
-if latency_records:
-    ldf = pd.DataFrame(latency_records)
-    col_l1, col_l2 = st.columns([1, 2])
-
-    with col_l1:
-        avg_fog = ldf[ldf["architecture"].str.contains("FOG")]["latency_ms"].mean() or 0.8
-        avg_cloud = ldf[ldf["architecture"].str.contains("CLOUD")]["latency_ms"].mean() or 305.0
-
-        st.metric(label="Avg Fog Decision Latency", value=f"{avg_fog:.2f} ms", delta="-99% faster", delta_color="normal")
-        st.metric(label="Avg Cloud Decision Latency", value=f"{avg_cloud:.2f} ms", delta="+300ms network lag", delta_color="inverse")
-
-        # Architectural takeaway for examiners
-        st.info(
-            "**Key Academic Insight:**\n\n"
-            "• **Fog Node:** Sub-millisecond closed-loop misting prevents plant root desiccation without relying on internet uplinks.\n\n"
-            "• **Cloud Fallback:** When WAN is severed, cloud architecture fails, whereas the Fog Node operates autonomously."
-        )
-
-    with col_l2:
-        # Bar chart comparing recent latencies
-        fig_bar = go.Figure()
-        fig_bar.add_trace(go.Bar(
-            x=["Fog Computing (Edge)", "Cloud Computing (Remote)"],
-            y=[avg_fog, avg_cloud],
-            marker_color=["#4caf50", "#2196f3"],
-            text=[f"{avg_fog:.1f} ms", f"{avg_cloud:.1f} ms"],
-            textposition="auto"
-        ))
-        fig_bar.update_layout(title="Average Actuation Latency Comparison (ms)", yaxis_title="Latency (ms)",
-                              height=280, margin=dict(l=20, r=20, t=40, b=20))
-        st.plotly_chart(fig_bar, use_container_width=True)
 
 # -----------------------------------------------------------------------------
 # Stage 3: Active Faults & Anomaly Log Panel

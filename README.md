@@ -77,7 +77,10 @@ MQTT (Message Queuing Telemetry Transport) is a lightweight, asynchronous, publi
 
 ### Why This is "Fog" Computing and Not Just "Cloud"
 In pure **Cloud Computing**, sensor telemetry travels hundreds of miles across the public internet to remote cloud servers (AWS/Azure/GCP) before control decisions are transmitted back. In high-pressure aeroponics, plant roots are suspended naked in air; if the internet link goes down or suffers jitter, root hairs desiccate and die within minutes. 
-**Fog Computing** decentralizes processing by placing computation and actuation logic on the local network edge (sub-millisecond latency). Even during a total WAN/internet failure, the local Fog Node continues precision misting and fault mitigation autonomously.
+**Fog Computing** decentralizes processing by placing computation and actuation logic on the local network edge, avoiding a WAN round trip for time-sensitive decisions. Even during a total WAN/internet failure, the local Fog Node continues misting and fault mitigation autonomously. The Python dashboard's latency value times the decision routine and its optional injected delay; it does not include the full sensor-to-pump network path.
+
+### iFogSim2 Digital Twin (Java)
+The project bundles the official iFogSim2 source and libraries, plus an aeroponics model of the humidity-sensor → misting-controller → pump loop. The dashboard includes an **iFogSim Digital Twin** page for running fog-gateway and cloud placements, varying sensor-zone count and WAN delay, and viewing/exporting simulated end-to-end loop results. The Python MQTT stack remains the live IoT demonstration. The sidebar's configurable cloud delay is a separate illustration, not an iFogSim measurement. See [`ifogsim/README.md`](ifogsim/README.md) for setup and academic explanation.
 
 ---
 

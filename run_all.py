@@ -87,7 +87,11 @@ def main():
     # 4. Launch Streamlit Web Dashboard
     print("[3/3] Starting Web Dashboard (dashboard.py)...")
     dash_proc = subprocess.Popen(
-        [PYTHON_EXEC, "-m", "streamlit", "run", os.path.join(PROJECT_DIR, "dashboard.py")],
+        [
+            PYTHON_EXEC, "-m", "streamlit", "run",
+            os.path.join(PROJECT_DIR, "dashboard.py"),
+            "--server.headless", "true",
+        ],
         cwd=PROJECT_DIR
     )
     processes.append(dash_proc)
